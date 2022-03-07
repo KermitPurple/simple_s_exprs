@@ -17,20 +17,10 @@ class ErrorNode(Node):
     message: str
 
 @dataclass
-class BinaryOp(Node):
-    left: Node
-    right: Node
-
-class Add(BinaryOp): pass
-class Sub(BinaryOp): pass
-class Mul(BinaryOp): pass
-class Div(BinaryOp): pass
-
-@dataclass
-class UnaryOp(Node):
-    child: Node
-
-class Neg(UnaryOp): pass
+class Operator(Node):
+    ident: str
+    func: 'function'
+    arguments: list[Node]
 
 @dataclass
 class ValueNode(Node):
@@ -41,17 +31,39 @@ class ValueNode(Node):
 class IdentNode(Node):
     name: str
 
+symbol_table = {
+    'print': print,
+    'neg': lambda a: -a,
+    'add': lambda a, b: a + b,
+    'sub': lambda a, b: a - b,
+    'mul': lambda a, b: a * b,
+    'div': lambda a, b: a / b,
+}
+
 def expression(scan: sc.Scanner) -> Node:
     if isinstance(scan.next, sc.LParenToken):
         next(scan, None) # this is the lparen
         ident = next(scan, None)
         if not isinstance(ident, sc.IdentToken):
-            return ErrorNode(f'Did not find identifier for function')
-    elif isinstance(scan.next, sc.ValueType):
+            return ErrorNode('Did not find identifier for function')
+        elif ident.name not in symbol_table:
+            return ErrorNode(f'Did not find identifier, {ident.name} in symbol table')
+        arguments = []
+        while not isinstance(scan.next, sc.RParenToken):
+            expr = expression(scan)
+            if isinstance(expr, ErrorNode):
+                return expr
+            arguments.append(expr)
+        return Operator(ident.name, symbol_table[ident.name], arguments)
+    elif isinstance(scan.next, sc.ValueToken):
         token = next(scan)
         return ValueNode(token.type, token.value)
     elif isinstance(scan.next, sc.IdentToken):
         token = next(scan)
         return IdentNode(token.name)
     else:
+        return ErrorNode(f'Unexpected token {scan.next}')
 
+def tree(string: str) -> Node:
+    scan = iter(sc.Scanner(string))
+    return expression(scan)
