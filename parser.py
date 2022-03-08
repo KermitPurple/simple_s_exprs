@@ -49,8 +49,10 @@ class DecrementNode(_IdentNode): pass
 
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
-    Get a function from the token stream
+    Get a specified token from the token stream
+    fail if expected token is not there
     :scan: iterator over token stream with 1 look ahead
+    :tok: the token to expect
     '''
     if isinstance(scan.next, tok):
         return next(scan)
@@ -60,6 +62,7 @@ def partial_assign(scan: sc.Scanner, assign_class) -> Node:
     '''
     Get the rest of an assign statement e.g. "x 10)"
     :scan: iterator over token stream with 1 look ahead
+    :assign_class: assign subclass used to construct node
     '''
     ident = token(scan, sc.IdentToken)
     ret = assign_class(ident.name, expression(scan))
@@ -70,6 +73,7 @@ def partial_increment(scan: sc.Scanner, increment_class) -> Node:
     '''
     get the rest of an increment statement e.g. "x)"
     :scan: iterator over token stream with 1 look ahead
+    :increment_class: increment subclass used to construct node
     '''
     ident = token(scan, sc.IdentToken)
     ret = increment_class(ident.name)
