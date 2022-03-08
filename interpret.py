@@ -69,6 +69,11 @@ def eval_tree(node: ps.Node) -> any:
         case ps.IdentNode(name):
             check_symbol(name)
             return symbol_table[name]
+        case ps.IfNode(cond, block, else_block):
+            if eval_tree(cond):
+                return eval_tree(block)
+            elif else_block is not None:
+                return eval_tree(else_block)
 
 def check_symbol(name: str):
     if name not in symbol_table:

@@ -47,6 +47,12 @@ class DivAssignNode(_AssignNode): pass
 class IncrementNode(_IdentNode): pass
 class DecrementNode(_IdentNode): pass
 
+@dataclass
+class IfNode(Node):
+    condition: Node
+    block: Node
+    else_block: Node
+
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
     Get a specified token from the token stream
@@ -80,6 +86,17 @@ def partial_increment(scan: sc.Scanner, increment_class) -> Node:
     token(scan, sc.RParenToken)
     return ret
 
+def partial_if(scan: sc.Scanner) -> Node:
+    '''
+    Get the rest of an if statement from the token stream "(x < 10) (add 1 2))"
+    :scan: iterator over token stream with 1 look ahead
+    '''
+    ret = IfNode(expression(scan), expression(scan), None)
+    if not isinstance(scan.next, sc.RParenToken):
+        ret.else_block = expression(scan)
+    token(scan, sc.RParenToken)
+    return ret
+
 def function(scan: sc.Scanner) -> Node:
     '''
     Get a function from the token stream
@@ -101,6 +118,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_increment(scan, IncrementNode)
     elif ident.name in ('dec', '--'):
         return partial_increment(scan, DecrementNode)
+    elif ident.name == 'if':
+        return partial_if(scan)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)
