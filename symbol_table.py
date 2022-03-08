@@ -21,6 +21,21 @@ def mul(first: T, *rest: T) -> T:
 def div(a: T, b: T) -> T:
     return a / b
 
+def eq(a: T, b: T) -> bool:
+    return a == b
+
+def lt(a: T, b: T) -> bool:
+    return a < b
+
+def gt(a: T, b: T) -> bool:
+    return a > b
+
+def le(a: T, b: T) -> bool:
+    return a <= b
+
+def ge(a: T, b: T) -> bool:
+    return a <= b
+
 symbol_table = {
     'print': print,
     'neg': neg,
@@ -32,5 +47,15 @@ symbol_table = {
     'mul': mul,
     '/': div,
     'div': div,
+    'eq': eq,
+    '==': eq,
+    'lt': lt,
+    '<': lt,
+    'gt': gt,
+    '>': gt,
+    'le': le,
+    '<=': le,
+    'ge': ge,
+    '>=': ge,
 }
 
