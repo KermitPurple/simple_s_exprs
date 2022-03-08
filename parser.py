@@ -1,5 +1,5 @@
 '''
-Handles converting token stream into abstract syntax program
+Handles converting token stream into abstract syntax tree
 '''
 
 from dataclasses import dataclass
