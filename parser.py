@@ -17,7 +17,7 @@ class ErrorNode(Node):
     message: str
 
 @dataclass
-class OperatorNode(Node):
+class FunctionNode(Node):
     ident: str
     func: 'function'
     arguments: list[Node]
@@ -65,7 +65,7 @@ def expression(scan: sc.Scanner) -> Node:
                 return expr
             arguments.append(expr)
         next(scan)
-        return OperatorNode(ident.name, symbol_table[ident.name], arguments)
+        return FunctionNode(ident.name, symbol_table[ident.name], arguments)
     elif isinstance(scan.next, sc.ValueToken):
         token = next(scan)
         return ValueNode(token.value)

@@ -16,12 +16,15 @@ def eval_tree(node: ps.Node) -> int | None:
     '''
     match node:
         case ps.ProgramNode(left, right):
-            eval_tree(left)
+            ret = eval_tree(left)
             if node is not None:
-                eval_tree(right)
+                ret = eval_tree(right)
+            return ret
         case ps.ValueNode(value=value):
             return value
-        case ps.OperatorNode(func=func, arguments=args):
-            return func(*map(eval_tree, args))
+        case ps.FunctionNode(func=func, arguments=args):
+            try:
+                return func(*map(eval_tree, args))
+            except TypeError as t:
         case ps.IdentNode(name):
             return ps.symbol_table.get(name, None)
