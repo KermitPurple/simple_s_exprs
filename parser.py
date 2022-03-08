@@ -46,9 +46,28 @@ class AddAssignNode(_AssignNode): pass
 class SubAssignNode(_AssignNode): pass
 class MulAssignNode(_AssignNode): pass
 class DivAssignNode(_AssignNode): pass
-
 class IncrementNode(_IdentNode): pass
 class DecrementNode(_IdentNode): pass
+
+def partial_assign(scan: sc.Scanner, assign_class) -> Node:
+    ident = next(scan, None)
+    if not isinstance(ident, sc.IdentToken):
+        return ErrorNode('Expected name of variable to assign to')
+    ret = assign_class(ident.name, expression(scan))
+    if not isinstance(scan.next, sc.RParenToken):
+        return ErrorNode(f'Expected \')\' after assignment')
+    next(scan)
+    return ret
+
+def partial_increment(scan: sc.Scanner, increment_class) -> Node:
+    ident = next(scan, None)
+    if not isinstance(ident, sc.IdentToken):
+        return ErrorNode('Expected name of variable')
+    ret = IncrementNode(ident.name)
+    if not isinstance(scan.next, sc.RParenToken):
+        return ErrorNode(f'Expected \')\'')
+    next(scan)
+    return ret
 
 def function(scan: sc.Scanner) -> Node:
     '''
@@ -60,68 +79,19 @@ def function(scan: sc.Scanner) -> Node:
     if not isinstance(ident, sc.IdentToken):
         return ErrorNode('Did not find identifier for function')
     elif ident.name in ('assign', '='):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to assign to')
-        ret = AssignNode(ident.name, expression(scan))
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after assignment')
-        next(scan)
-        return ret
+        return partial_assign(scan, AssignNode)
     elif ident.name in ('add_assign', '+='):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to assign to')
-        ret = AddAssignNode(ident.name, expression(scan))
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after assignment')
-        next(scan)
-        return ret
+        return partial_assign(scan, AddAssignNode)
     elif ident.name in ('sub_assign', '-='):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to assign to')
-        ret = SubAssignNode(ident.name, expression(scan))
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after assignment')
-        next(scan)
-        return ret
+        return partial_assign(scan, SubAssignNode)
     elif ident.name in ('mul_assign', '*='):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to assign to')
-        ret = MulAssignNode(ident.name, expression(scan))
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after assignment')
-        next(scan)
-        return ret
+        return partial_assign(scan, MulAssignNode)
     elif ident.name in ('div_assign', '/='):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to assign to')
-        ret = DivAssignNode(ident.name, expression(scan))
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after assignment')
-        next(scan)
-        return ret
+        return partial_assign(scan, DivAssignNode)
     elif ident.name in ('inc', '++'):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to increment')
-        ret = IncrementNode(ident.name)
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after increment')
-        next(scan)
-        return ret
+        return partial_increment(scan, IncrementNode)
     elif ident.name in ('dec', '--'):
-        ident = next(scan, None)
-        if not isinstance(ident, sc.IdentToken):
-            return ErrorNode('Expected name of variable to decrement')
-        ret = DecrementNode(ident.name)
-        if not isinstance(scan.next, sc.RParenToken):
-            return ErrorNode(f'Expected \')\' after decrement')
-        next(scan)
-        return ret
+        return partial_increment(scan, DecrementNode)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)
@@ -129,7 +99,6 @@ def function(scan: sc.Scanner) -> Node:
             return expr
         arguments.append(expr)
     next(scan)
-    print(ident.name, arguments)
     return FunctionNode(ident.name, arguments)
 
 def expression(scan: sc.Scanner) -> Node:
