@@ -59,7 +59,7 @@ symbol_table = {
     '<=': le,
     'ge': ge,
     '>=': ge,
-    'nop': nop
+    'nop': nop,
     'list': list,
 }
 
