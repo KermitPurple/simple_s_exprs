@@ -1,5 +1,5 @@
 '''
-Handles converting token stream into abstract syntax tree
+Handles converting token stream into abstract syntax program
 '''
 
 from dataclasses import dataclass
@@ -31,11 +31,11 @@ class _IdentNode(Node):
 class IdentNode(_IdentNode): pass
 
 # forward declaration
-class ProgramNode(Node): pass
+class ExpressionsNode(Node): pass
 @dataclass
-class ProgramNode(Node):
+class ExpressionsNode(Node):
     left: Node
-    right: ProgramNode | None = None
+    right: ExpressionsNode | None = None
 
 @dataclass
 class _AssignNode(Node):
@@ -114,23 +114,30 @@ def expression(scan: sc.Scanner) -> Node:
     elif isinstance(scan.next, sc.IdentToken):
         token = next(scan)
         return IdentNode(token.name)
+    elif isinstance(scan.next, sc.ErrorToken):
+        return ErrorNode(scan.next.message)
     else:
         return ErrorNode(f'Unexpected token {scan.next}')
 
-def program(scan: sc.Scanner) -> Node:
+def expressions(scan: sc.Scanner) -> Node:
     '''
-    Get an program from the token stream
+    Get an expressions from the token stream
     :scan: iterator over token stream with 1 look ahead
     '''
-    node = ProgramNode(expression(scan))
+    node = ExpressionsNode(expression(scan))
     if isinstance(node.left, ErrorNode):
         return node.left
-    elif not isinstance(scan.next, sc.EndToken):
-        node.right = program(scan)
+    elif not isinstance(scan.next, sc.EndToken | sc.RParenToken):
+        node.right = expressions(scan)
         if isinstance(node.right, ErrorNode):
             return node.right
     return node
 
-def tree(string: str) -> Node:
+def program(string: str) -> Node:
     scan = iter(sc.Scanner(string))
-    return program(scan)
+    node = expressions(scan)
+    if isinstance(scan.next, sc.ErrorToken):
+        return ErrorNode(scan.next.message)
+    elif not isinstance(scan.next, sc.EndToken):
+        return ErrorNode(f'Unexpected token {scan.next}')
+    return node

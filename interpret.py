@@ -1,5 +1,5 @@
 '''
-Evaluate and execute an abstract syntax tree
+Evaluate and execute an abstract syntax program
 '''
 
 import parser as ps
@@ -9,14 +9,14 @@ def interpret(string: str) -> any:
     '''
     interpret and execute a string
     '''
-    return eval_tree(ps.tree(string))
+    return eval_tree(ps.program(string))
 
 def eval_tree(node: ps.Node) -> any:
     '''
-    interpret and execute a tree
+    interpret and execute a program
     '''
     match node:
-        case ps.ProgramNode(left, right):
+        case ps.ExpressionsNode(left, right):
             ret = eval_tree(left)
             if right is not None:
                 ret = eval_tree(right)
