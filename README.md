@@ -1,6 +1,14 @@
 # Simple s-expression interpreter
 
-### Macros:
+### Preprocessor Directives:
+
+#### Includes:
+
+Include the entirety of another file in place of the line
+`#inc file.txt`.
+This line will be replaced with the contents of file.txt
+
+#### Macros:
 
 Substitute one string for another. If
 `#def test (print 'this will print test')`

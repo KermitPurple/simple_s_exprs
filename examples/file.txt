@@ -1,0 +1,4 @@
+#def m (print 'Macros!')
+(print 'file.txt')
+m m m m m m m m m m
+(= x 100)

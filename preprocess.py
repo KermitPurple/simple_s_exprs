@@ -30,14 +30,15 @@ def find_macro(macros: dict[str, str], line: str) -> tuple[str, int] | None:
             return macro, index
     return None
 
-def preprocess(string: str) -> str:
+def preprocess(string: str, macros: dict[str, str] | None = None) -> str:
     '''
     preprocess input
     this removes comments and expands macros
     :string: the input to preprocess
     :returns: processed input
     '''
-    macros: dict[str, str] = {}
+    if macros is None:
+        macros = {}
     new_lines = []
     for line in string.split('\n'):
         line = line.strip()
@@ -48,17 +49,25 @@ def preprocess(string: str) -> str:
                 line = ''
             else:
                 name, line = parts
-            if name == 'def': # define
-                if not line or len((parts := line.split(' ', 1))) < 2:
-                    raise PreprocesserException(f'Expected 2 arguments for def directive')
-                name, rest = parts
-                macros[name] = rest
-                line = ''
-            else:
-                raise PreprocesserException(f'Unknown preprocessor directive: {name}')
+            match name:
+                case 'def':
+                    if not line or len((parts := line.split(' ', 1))) < 2:
+                        raise PreprocesserException(f'Expected 2 arguments for def directive')
+                    name, rest = parts
+                    macros[name] = rest
+                    line = ''
+                case 'inc':
+                    if not line:
+                        raise PreprocesserException(f'Expected 1 filename for inc directive')
+                    with open(line, 'r') as f:
+                        new_lines.append(preprocess(f.read(), macros))
+                    line = ''
+                case _:
+                    raise PreprocesserException(f'Unknown preprocessor directive: {name}')
         elif COMMENT_PREFIX in line:
             index = line.index(COMMENT_PREFIX)
             line = line[:index]
+        # substitute macros
         while 1:
             found_tup = find_macro(macros, line)
             if found_tup is None:

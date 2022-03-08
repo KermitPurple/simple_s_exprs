@@ -1,0 +1,7 @@
+#inc file.txt
+
+(print 'inc.txt')
+m
+m
+m
+(print 'x is' x)
