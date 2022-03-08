@@ -1,0 +1,14 @@
+(if True
+    (nop
+        (print 'nop')
+        (print 'can')
+        (print 'be')
+        (print 'used')
+        (print 'to')
+        (print 'chain')
+    )
+    (nop
+        (print 'bigger')
+        (print 'blocks!')
+    )
+)

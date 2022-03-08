@@ -1,0 +1,8 @@
+#def p3x (print x x x)
+(= x 10)
+p3x
+p3x
+p3x
+p3x
+p3x
+p3x
