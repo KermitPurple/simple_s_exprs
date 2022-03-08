@@ -13,6 +13,30 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(assign longer_name 6) longer_name'), 6)
         self.assertEqual(interpret('(assign slashes/too \'And strings!\') slashes/too'), 'And strings!')
 
+    def test_add_assign(self):
+        self.assertEqual(interpret('(assign x 10) (add_assign x 10) x'), 20)
+        self.assertEqual(interpret('(assign y 2) (add_assign y 5) y'), 7)
+
+    def test_sub_assign(self):
+        self.assertEqual(interpret('(assign x 10) (add_assign x 10) x'), 20)
+        self.assertEqual(interpret('(assign y 2) (add_assign y 5) y'), 7)
+
+    def test_mul_assign(self):
+        self.assertEqual(interpret('(assign x 10) (mul_assign x 10) x'), 100)
+        self.assertEqual(interpret('(assign y 2) (mul_assign y 5) y'), 10)
+
+    def test_div_assign(self):
+        self.assertEqual(interpret('(assign x 10) (div_assign x 10) x'), 1)
+        self.assertAlmostEqual(interpret('(assign y 2) (div_assign y 5) y'), 2 / 5)
+
+    def test_inc(self):
+        self.assertEqual(interpret('(assign x 10) (inc x) x'), 11)
+        self.assertEqual(interpret('(assign y 2) (inc y) y'), 3)
+
+    def test_dec(self):
+        self.assertEqual(interpret('(assign x 10) (dec x) x'), 9)
+        self.assertEqual(interpret('(assign y 2) (dec y) y'), 1)
+
     def test_neg(self):
         self.assertEqual(interpret('(neg 3.5)'), -3.5)
         self.assertEqual(interpret('(neg 5)'), -5)

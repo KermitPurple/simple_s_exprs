@@ -63,7 +63,7 @@ def partial_increment(scan: sc.Scanner, increment_class) -> Node:
     ident = next(scan, None)
     if not isinstance(ident, sc.IdentToken):
         return ErrorNode('Expected name of variable')
-    ret = IncrementNode(ident.name)
+    ret = increment_class(ident.name)
     if not isinstance(scan.next, sc.RParenToken):
         return ErrorNode(f'Expected \')\'')
     next(scan)
