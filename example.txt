@@ -1,0 +1,4 @@
+(print 'Hello World!' 100)
+(print 1)
+(print(add 1 2))
+(print(add (mul 2.5 8) 20))
