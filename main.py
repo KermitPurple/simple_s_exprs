@@ -25,6 +25,8 @@ def main():
         case 1:
             with open(argv[0], 'r') as file:
                 from_file(file)
+        case _:
+            print('Invalid number of arguments')
 
 if __name__ == '__main__':
     main()
