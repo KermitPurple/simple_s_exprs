@@ -60,6 +60,14 @@ def scanner_gen(string: str) -> Iterator[Token]:
                     state = ScanningState.IDENT
             case ScanningState.IDENT:
                 if ch.isspace() or ch in '()':
+                    if partial in ('True', 'False'):
+                        if partial == 'True':
+                            yield ValueToken(True)
+                        else:
+                            yield ValueToken(False)
+                        state = ScanningState.GENERAL
+                        partial = ''
+                        continue
                     yield IdentToken(partial)
                     if ch == ')':
                         yield RParenToken()
