@@ -86,10 +86,8 @@ def function(scan: sc.Scanner) -> Node:
     :scan: iterator over token stream with 1 look ahead
     '''
     token(scan, sc.LParenToken)
-    ident = next(scan, None)
-    if not isinstance(ident, sc.IdentToken):
-        raise ParserException('Did not find identifier for function')
-    elif ident.name in ('assign', '='):
+    ident = token(scan, sc.IdentToken)
+    if ident.name in ('assign', '='):
         return partial_assign(scan, AssignNode)
     elif ident.name in ('add_assign', '+='):
         return partial_assign(scan, AddAssignNode)
