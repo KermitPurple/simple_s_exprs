@@ -36,6 +36,8 @@ def le(a: T, b: T) -> bool:
 def ge(a: T, b: T) -> bool:
     return a >= b
 
+def nop(*args: T): pass
+
 symbol_table = {
     'print': print,
     'neg': neg,
@@ -57,5 +59,6 @@ symbol_table = {
     '<=': le,
     'ge': ge,
     '>=': ge,
+    'nop': nop
 }
 
