@@ -8,6 +8,8 @@ from enum import Enum
 
 T = TypeVar('T')
 
+class ScannerException(Exception): pass
+
 class ScanningState(Enum):
     GENERAL = 0
     IDENT = 1
@@ -21,10 +23,6 @@ class Token: pass
 class EndToken(Token): pass
 class LParenToken(Token): pass
 class RParenToken(Token): pass
-
-@dataclass
-class ErrorToken(Token):
-    message: str
 
 @dataclass
 class IdentToken(Token):
@@ -94,7 +92,7 @@ def scanner_gen(string: str) -> Iterator[Token]:
                     partial += ch
                     state = ScanningState.FLOAT
                 else:
-                    yield ErrorToken(f'Unexpected character inside int: {ch}')
+                    raise ScannerException(f'Unexpected character inside int: {ch}')
             case ScanningState.STRING:
                 match ch:
                     case '\'':
@@ -133,7 +131,7 @@ def scanner_gen(string: str) -> Iterator[Token]:
                 elif ch.isnumeric():
                     partial += ch
                 else:
-                    yield ErrorToken(f'Unexpected character inside int: {ch}')
+                    raise ScannerException(f'Unexpected character inside int: {ch}')
     yield EndToken()
 
 class Scanner:

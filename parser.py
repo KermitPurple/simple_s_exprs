@@ -9,12 +9,10 @@ import scanner as sc
 
 T = TypeVar('T')
 
-@dataclass
-class Node: pass
+class ParserException(Exception): pass
 
 @dataclass
-class ErrorNode(Node):
-    message: str
+class Node: pass
 
 @dataclass
 class FunctionNode(Node):
@@ -52,20 +50,20 @@ class DecrementNode(_IdentNode): pass
 def partial_assign(scan: sc.Scanner, assign_class) -> Node:
     ident = next(scan, None)
     if not isinstance(ident, sc.IdentToken):
-        return ErrorNode('Expected name of variable to assign to')
+        raise ParserException('Expected name of variable to assign to')
     ret = assign_class(ident.name, expression(scan))
     if not isinstance(scan.next, sc.RParenToken):
-        return ErrorNode(f'Expected \')\' after assignment')
+        raise ParserException(f'Expected \')\' after assignment')
     next(scan)
     return ret
 
 def partial_increment(scan: sc.Scanner, increment_class) -> Node:
     ident = next(scan, None)
     if not isinstance(ident, sc.IdentToken):
-        return ErrorNode('Expected name of variable')
+        raise ParserException('Expected name of variable')
     ret = increment_class(ident.name)
     if not isinstance(scan.next, sc.RParenToken):
-        return ErrorNode(f'Expected \')\'')
+        raise ParserException(f'Expected \')\'')
     next(scan)
     return ret
 
@@ -77,7 +75,7 @@ def function(scan: sc.Scanner) -> Node:
     next(scan, None) # this is the lparen
     ident = next(scan, None)
     if not isinstance(ident, sc.IdentToken):
-        return ErrorNode('Did not find identifier for function')
+        raise ParserException('Did not find identifier for function')
     elif ident.name in ('assign', '='):
         return partial_assign(scan, AssignNode)
     elif ident.name in ('add_assign', '+='):
@@ -95,7 +93,7 @@ def function(scan: sc.Scanner) -> Node:
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)
-        if isinstance(expr, ErrorNode):
+        if isinstance(expr, ParserException):
             return expr
         arguments.append(expr)
     next(scan)
@@ -114,10 +112,8 @@ def expression(scan: sc.Scanner) -> Node:
     elif isinstance(scan.next, sc.IdentToken):
         token = next(scan)
         return IdentNode(token.name)
-    elif isinstance(scan.next, sc.ErrorToken):
-        return ErrorNode(scan.next.message)
     else:
-        return ErrorNode(f'Unexpected token {scan.next}')
+        raise ParserException(f'Unexpected token {scan.next}')
 
 def expressions(scan: sc.Scanner) -> Node:
     '''
@@ -125,19 +121,17 @@ def expressions(scan: sc.Scanner) -> Node:
     :scan: iterator over token stream with 1 look ahead
     '''
     node = ExpressionsNode(expression(scan))
-    if isinstance(node.left, ErrorNode):
+    if isinstance(node.left, ParserException):
         return node.left
     elif not isinstance(scan.next, sc.EndToken | sc.RParenToken):
         node.right = expressions(scan)
-        if isinstance(node.right, ErrorNode):
+        if isinstance(node.right, ParserException):
             return node.right
     return node
 
 def program(string: str) -> Node:
     scan = iter(sc.Scanner(string))
     node = expressions(scan)
-    if isinstance(scan.next, sc.ErrorToken):
-        return ErrorNode(scan.next.message)
-    elif not isinstance(scan.next, sc.EndToken):
-        return ErrorNode(f'Unexpected token {scan.next}')
+    if not isinstance(scan.next, sc.EndToken):
+        raise ParserException(f'Unexpected token {scan.next}')
     return node

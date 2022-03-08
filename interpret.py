@@ -2,14 +2,21 @@
 Evaluate and execute an abstract syntax program
 '''
 
+from scanner import ScannerException
+from parser import ParserException
 import parser as ps
 from symbol_table import symbol_table
+
+class InterpretException(Exception): pass
 
 def interpret(string: str) -> any:
     '''
     interpret and execute a string
     '''
-    return eval_tree(ps.program(string))
+    try:
+        return eval_tree(ps.program(string))
+    except (ScannerException, ParserException, InterpretException) as e:
+        print(e)
 
 def eval_tree(node: ps.Node) -> any:
     '''
@@ -26,12 +33,11 @@ def eval_tree(node: ps.Node) -> any:
         case ps.FunctionNode(name, args):
             func = symbol_table.get(name, None)
             if func is None:
-                print(f'{name} is undefined')
-                return
+                raise InterpretException(f'{name} is undefined')
             try:
                 return func(*map(eval_tree, args))
             except TypeError as t:
-                print(t)
+                raise InterpretException(str(t))
         case ps.AssignNode(name, value):
             symbol_table[name] = eval_tree(value)
             return symbol_table[name]
@@ -55,5 +61,3 @@ def eval_tree(node: ps.Node) -> any:
             return symbol_table[name]
         case ps.IdentNode(name):
             return symbol_table.get(name, None)
-        case ps.ErrorNode(msg):
-            print(msg)
