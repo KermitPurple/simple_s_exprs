@@ -32,7 +32,7 @@ class TestInterpret(unittest.TestCase):
         self.assertAlmostEqual(interpret('(mul 2.9 2)'), 5.8)
         self.assertEqual(interpret('(mul (mul 3 2) 1)'), 6)
         self.assertEqual(interpret('(mul 3 (mul 2 1))'), 6)
-        self.assertEqual(interpret('(mull 1 2 3 4 5 6 7 8 9 10)'), 3628800)
+        self.assertEqual(interpret('(mul 1 2 3 4 5 6 7 8 9 10)'), 3628800)
 
     def test_div(self):
         self.assertAlmostEqual(interpret('(div 2.9 2)'), 1.45)
