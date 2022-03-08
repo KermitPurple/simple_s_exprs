@@ -10,7 +10,7 @@ def interactive():
             val = interpret(input('interpreter> '))
             if val is not None:
                 print(f'{val!r}')
-    except EOFError:
+    except (KeyboardInterrupt, EOFError):
         pass
 
 def from_file(file: IO[str]):
