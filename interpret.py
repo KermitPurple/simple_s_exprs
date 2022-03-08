@@ -29,3 +29,5 @@ def eval_tree(node: ps.Node) -> any:
                 print(f'{name!r} got the incorrect number of arguments: \n\t{t}')
         case ps.IdentNode(name):
             return ps.symbol_table.get(name, None)
+        case ps.ErrorNode(msg):
+            print(msg)

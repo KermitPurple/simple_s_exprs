@@ -81,8 +81,12 @@ def program(scan: sc.Scanner) -> Node:
     :scan: iterator over token stream with 1 look ahead
     '''
     node = ProgramNode(expression(scan))
-    if not isinstance(scan.next, sc.EndToken):
+    if isinstance(node.left, ErrorNode):
+        return node.left
+    elif not isinstance(scan.next, sc.EndToken):
         node.right = program(scan)
+        if isinstance(node.right, ErrorNode):
+            return node.right
     return node
 
 def tree(string: str) -> Node:
