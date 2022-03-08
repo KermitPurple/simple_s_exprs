@@ -4,3 +4,7 @@
 (print (add (mul 2.5 8) 20))
 (print (< 1 2))
 (print 'That\'s\nescaping!')
+(= x 10)
+(print (if (> x 0) x 0))
+(= x (neg 10))
+(print (if (> x 0) x 0))

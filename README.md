@@ -15,4 +15,4 @@ add         | Add two numbers                           | `(add 1 2)`
 sub         | Subtract two numbers                      | `(sub 5 4)`
 mul         | Multiply two numbers                      | `(mul 2 2)`
 div         | Divide two numbers                        | `(div 9 3)`
-if          | Conditionally do something                | `(if (> x 0)(print x))`
+if          | Conditionally do something                | `(if (> x 0)(print x))` or `(if (> x 0) x 0)
