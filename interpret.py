@@ -4,13 +4,13 @@ Evaluate and execute an abstract syntax tree
 
 import parser as ps
 
-def interpret(string: str):
+def interpret(string: str) -> any:
     '''
     interpret and execute a string
     '''
-    eval_tree(ps.tree(string))
+    return eval_tree(ps.tree(string))
 
-def eval_tree(node: ps.Node) -> int | None:
+def eval_tree(node: ps.Node) -> any:
     '''
     interpret and execute a tree
     '''
