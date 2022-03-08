@@ -35,7 +35,11 @@ class ValueToken(Token):
     type: ValueType
     value: T
 
-def scanner_gen(string: str):
+def scanner_gen(string: str) -> Iterator[Token]:
+    '''
+    use a generator to convert character stream to tokens stream
+    :string: the character stream to convert
+    '''
     string += ' '
     state = ScanningState.GENERAL
     partial = ''
@@ -82,6 +86,9 @@ def scanner_gen(string: str):
     yield EndToken()
 
 class Scanner:
+    '''
+    A token stream iterator with 1 look ahead
+    '''
     def __init__(self, string: str):
         self.string = string
 

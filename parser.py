@@ -31,6 +31,7 @@ class ValueNode(Node):
 class IdentNode(Node):
     name: str
 
+# forward declaration
 class ProgramNode(Node): pass
 @dataclass
 class ProgramNode(Node):
@@ -47,6 +48,10 @@ symbol_table = {
 }
 
 def expression(scan: sc.Scanner) -> Node:
+    '''
+    Get an expression from the token stream
+    :scan: iterator over token stream with 1 look ahead
+    '''
     if isinstance(scan.next, sc.LParenToken):
         next(scan, None) # this is the lparen
         ident = next(scan, None)
@@ -72,6 +77,10 @@ def expression(scan: sc.Scanner) -> Node:
         return ErrorNode(f'Unexpected token {scan.next}')
 
 def program(scan: sc.Scanner) -> Node:
+    '''
+    Get an program from the token stream
+    :scan: iterator over token stream with 1 look ahead
+    '''
     node = ProgramNode(expression(scan))
     if not isinstance(scan.next, sc.EndToken):
         node.right = program(scan)
