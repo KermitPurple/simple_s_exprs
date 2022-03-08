@@ -48,22 +48,30 @@ class IncrementNode(_IdentNode): pass
 class DecrementNode(_IdentNode): pass
 
 def token(scan: sc.Scanner, tok) -> sc.Token:
+    '''
+    Get a function from the token stream
+    :scan: iterator over token stream with 1 look ahead
+    '''
     if isinstance(scan.next, tok):
         return next(scan)
-    raise ParserException(f'Expected {tok} but found {scan.next}')
+    raise ParserException(f'Expected {tok.__name__} but found {scan.next}')
 
 def partial_assign(scan: sc.Scanner, assign_class) -> Node:
-    ident = next(scan, None)
-    if not isinstance(ident, sc.IdentToken):
-        raise ParserException('Expected name of variable to assign to')
+    '''
+    Get the rest of an assign statement e.g. "x 10)"
+    :scan: iterator over token stream with 1 look ahead
+    '''
+    ident = token(scan, sc.IdentToken)
     ret = assign_class(ident.name, expression(scan))
     token(scan, sc.RParenToken)
     return ret
 
 def partial_increment(scan: sc.Scanner, increment_class) -> Node:
-    ident = next(scan, None)
-    if not isinstance(ident, sc.IdentToken):
-        raise ParserException('Expected name of variable')
+    '''
+    get the rest of an increment statement e.g. "x)"
+    :scan: iterator over token stream with 1 look ahead
+    '''
+    ident = token(scan, sc.IdentToken)
     ret = increment_class(ident.name)
     token(scan, sc.RParenToken)
     return ret
