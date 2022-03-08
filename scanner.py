@@ -57,6 +57,10 @@ def scanner_gen(string: str):
             case ScanningState.IDENT:
                 if ch.isspace() or ch in '()':
                     yield IdentToken(partial)
+                    if ch == ')':
+                        yield RParenToken()
+                    elif ch == '(':
+                        yield LParenToken()
                     state = ScanningState.GENERAL
                     partial = ''
                 else:

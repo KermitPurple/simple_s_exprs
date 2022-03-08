@@ -17,7 +17,7 @@ class ErrorNode(Node):
     message: str
 
 @dataclass
-class Operator(Node):
+class OperatorNode(Node):
     ident: str
     func: 'function'
     arguments: list[Node]
@@ -30,6 +30,12 @@ class ValueNode(Node):
 @dataclass
 class IdentNode(Node):
     name: str
+
+class ProgramNode(Node): pass
+@dataclass
+class ProgramNode(Node):
+    left: Node
+    right: ProgramNode | None = None
 
 symbol_table = {
     'print': print,
@@ -54,7 +60,8 @@ def expression(scan: sc.Scanner) -> Node:
             if isinstance(expr, ErrorNode):
                 return expr
             arguments.append(expr)
-        return Operator(ident.name, symbol_table[ident.name], arguments)
+        next(scan)
+        return OperatorNode(ident.name, symbol_table[ident.name], arguments)
     elif isinstance(scan.next, sc.ValueToken):
         token = next(scan)
         return ValueNode(token.type, token.value)
@@ -64,6 +71,12 @@ def expression(scan: sc.Scanner) -> Node:
     else:
         return ErrorNode(f'Unexpected token {scan.next}')
 
+def program(scan: sc.Scanner) -> Node:
+    node = ProgramNode(expression(scan))
+    if not isinstance(scan.next, sc.EndToken):
+        node.right = program(scan)
+    return node
+
 def tree(string: str) -> Node:
     scan = iter(sc.Scanner(string))
-    return expression(scan)
+    return program(scan)
