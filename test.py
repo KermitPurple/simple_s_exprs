@@ -13,6 +13,8 @@ class TestPreprocess(unittest.TestCase):
         self.assertEqual(preprocess('(add 1 2) // Comment!'), '(add 1 2) ')
         self.assertEqual(preprocess('(add 1 2)     '), '(add 1 2) ')
         self.assertEqual(preprocess('#def p (print \'test\')\np (print \'Also this!\')'), '(print \'test\') (print \'Also this!\') ')
+        self.assertEqual(preprocess('#def p (print \'test\')\n (print \'just p\')'), '(print \'just p\') ')
+        self.assertEqual(preprocess('#def p (print \'test\')\n (print \'just \\\' p\')'), '(print \'just \\\' p\') ')
 
 class TestInterpret(unittest.TestCase):
     def test_assign(self):

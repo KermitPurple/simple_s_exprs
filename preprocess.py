@@ -17,7 +17,17 @@ def find_macro(macros: dict[str, str], line: str) -> tuple[str, int] | None:
     for macro in macros:
         matches = re.finditer(fr'\b{macro}\b', line)
         for mtch in matches:
-            return macro, mtch.start(0)
+            index = mtch.start(0)
+            in_string = False
+            prev_bslash = False
+            for ch in line[:index]:
+                if ch == '\'':
+                    if in_string and not prev_bslash or not in_string:
+                        in_string = not in_string
+                prev_bslash = ch == '\\'
+            if in_string:
+                continue
+            return macro, index
     return None
 
 def preprocess(string: str) -> str:
@@ -30,6 +40,7 @@ def preprocess(string: str) -> str:
     macros: dict[str, str] = {}
     new_lines = []
     for line in string.split('\n'):
+        line = line.strip()
         if line.startswith(DIRECTIVE_PREFIX):
             parts = line[1:].split(' ', 1)
             if len(parts) == 1:
@@ -54,5 +65,5 @@ def preprocess(string: str) -> str:
                 break
             macro, index = found_tup
             line = line[:index] + macros[macro] + line[index + len(macro):]
-        new_lines.append(line.strip())
+        new_lines.append(line)
     return '\n'.join(new_lines).strip() + ' '
