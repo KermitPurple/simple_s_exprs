@@ -1,6 +1,13 @@
 # Simple s-expression interpreter
 
-#### Built-in functions:
+### Macros:
+
+Substitute one string for another. If
+`#def test (print 'this will print test')`
+is in a program, every spot after that that has the word test (not in a string)
+will be replaced with the print expression
+
+### Built-in functions:
 
 Name        | Action                                | Example
 ------------|---------------------------------------|-------------------------
