@@ -7,7 +7,9 @@ from sys import argv
 def interactive():
     try:
         while 1:
-            interpret(input('interpreter> '))
+            val = interpret(input('interpreter> '))
+            if val is not None:
+                print(f'{val!r}')
     except EOFError:
         pass
 

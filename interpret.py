@@ -17,14 +17,15 @@ def eval_tree(node: ps.Node) -> any:
     match node:
         case ps.ProgramNode(left, right):
             ret = eval_tree(left)
-            if node is not None:
+            if right is not None:
                 ret = eval_tree(right)
             return ret
         case ps.ValueNode(value=value):
             return value
-        case ps.FunctionNode(func=func, arguments=args):
+        case ps.FunctionNode(name, func, args):
             try:
                 return func(*map(eval_tree, args))
             except TypeError as t:
+                print(f'{name!r} got the incorrect number of arguments: \n\t{t}')
         case ps.IdentNode(name):
             return ps.symbol_table.get(name, None)
