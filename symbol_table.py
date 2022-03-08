@@ -60,5 +60,6 @@ symbol_table = {
     'ge': ge,
     '>=': ge,
     'nop': nop
+    'list': list,
 }
 
