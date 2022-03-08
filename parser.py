@@ -24,7 +24,6 @@ class OperatorNode(Node):
 
 @dataclass
 class ValueNode(Node):
-    type: sc.ValueType
     value: T
 
 @dataclass
@@ -69,7 +68,7 @@ def expression(scan: sc.Scanner) -> Node:
         return OperatorNode(ident.name, symbol_table[ident.name], arguments)
     elif isinstance(scan.next, sc.ValueToken):
         token = next(scan)
-        return ValueNode(token.type, token.value)
+        return ValueNode(token.value)
     elif isinstance(scan.next, sc.IdentToken):
         token = next(scan)
         return IdentNode(token.name)

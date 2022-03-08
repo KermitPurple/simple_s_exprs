@@ -3,7 +3,7 @@ Handles scanning the character stream and converting it into a character stream
 '''
 
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeVar, Iterator
 from enum import Enum
 
 T = TypeVar('T')
@@ -12,9 +12,8 @@ class ScanningState(Enum):
     GENERAL = 0
     IDENT = 1
     INT = 2
-
-class ValueType(Enum):
-    INT = 0
+    STRING = 3
+    FLOAT = 4
 
 @dataclass
 class Token: pass
@@ -32,7 +31,6 @@ class IdentToken(Token):
 
 @dataclass
 class ValueToken(Token):
-    type: ValueType
     value: T
 
 def scanner_gen(string: str) -> Iterator[Token]:
@@ -51,6 +49,8 @@ def scanner_gen(string: str) -> Iterator[Token]:
                 elif ch.isnumeric():
                     partial += ch
                     state = ScanningState.INT
+                elif ch == "'":
+                    state = ScanningState.STRING
                 elif ch == ')':
                     yield RParenToken()
                 elif ch == '(':
@@ -72,7 +72,31 @@ def scanner_gen(string: str) -> Iterator[Token]:
             case ScanningState.INT:
                 paren = ch in '()'
                 if ch.isspace() or paren:
-                    yield ValueToken(ValueType.INT, int(partial))
+                    yield ValueToken(int(partial))
+                    if ch == ')':
+                        yield RParenToken()
+                    elif ch == '(':
+                        yield LParenToken()
+                    state = ScanningState.GENERAL
+                    partial = ''
+                elif ch.isnumeric():
+                    partial += ch
+                elif ch == '.':
+                    partial += ch
+                    state = ScanningState.FLOAT
+                else:
+                    yield ErrorToken(f'Unexpected character inside int: {ch}')
+            case ScanningState.STRING:
+                if ch == "'":
+                    yield ValueToken(partial)
+                    state = ScanningState.GENERAL
+                    partial = ''
+                else:
+                    partial += ch
+            case ScanningState.FLOAT:
+                paren = ch in '()'
+                if ch.isspace() or paren:
+                    yield ValueToken(float(partial))
                     if ch == ')':
                         yield RParenToken()
                     elif ch == '(':
