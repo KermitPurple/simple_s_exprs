@@ -12,8 +12,9 @@ class ScanningState(Enum):
     GENERAL = 0
     IDENT = 1
     INT = 2
-    STRING = 3
-    FLOAT = 4
+    FLOAT = 3
+    STRING = 4
+    STRING_ESCAPE = 5
 
 @dataclass
 class Token: pass
@@ -95,12 +96,30 @@ def scanner_gen(string: str) -> Iterator[Token]:
                 else:
                     yield ErrorToken(f'Unexpected character inside int: {ch}')
             case ScanningState.STRING:
-                if ch == "'":
-                    yield ValueToken(partial)
-                    state = ScanningState.GENERAL
-                    partial = ''
-                else:
-                    partial += ch
+                match ch:
+                    case '\'':
+                        yield ValueToken(partial)
+                        state = ScanningState.GENERAL
+                        partial = ''
+                    case '\\':
+                        state = ScanningState.STRING_ESCAPE
+                    case _:
+                        partial += ch
+            case ScanningState.STRING_ESCAPE:
+                match ch:
+                    case 'n':
+                        partial += '\n'
+                    case 't':
+                        partial += '\t'
+                    case 'b':
+                        partial += '\b'
+                    case 'v':
+                        partial += '\v'
+                    case '\'':
+                        partial += '\''
+                    case _:
+                        partial += '\\' + ch
+                state = ScanningState.STRING
             case ScanningState.FLOAT:
                 paren = ch in '()'
                 if ch.isspace() or paren:
