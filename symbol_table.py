@@ -34,7 +34,7 @@ def le(a: T, b: T) -> bool:
     return a <= b
 
 def ge(a: T, b: T) -> bool:
-    return a <= b
+    return a >= b
 
 symbol_table = {
     'print': print,

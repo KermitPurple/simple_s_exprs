@@ -63,6 +63,36 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(div (div 3 2) 1)'), 1.5)
         self.assertEqual(interpret('(div 3 (div 2 1))'), 1.5)
 
+    def test_eq(self):
+        self.assertEqual(interpret('(eq 0 0)'), True)
+        self.assertEqual(interpret('(eq 1 1)'), True)
+        self.assertEqual(interpret('(eq 10 10)'), True)
+        self.assertEqual(interpret('(eq 0 1)'), False)
+
+    def test_lt(self):
+        self.assertEqual(interpret('(lt 0 0)'), False)
+        self.assertEqual(interpret('(lt 2 1)'), False)
+        self.assertEqual(interpret('(lt 9 10)'), True)
+        self.assertEqual(interpret('(lt 0 1)'), True)
+
+    def test_gt(self):
+        self.assertEqual(interpret('(gt 0 0)'), False)
+        self.assertEqual(interpret('(gt 2 1)'), True)
+        self.assertEqual(interpret('(gt 9 10)'), False)
+        self.assertEqual(interpret('(gt 0 1)'), False)
+
+    def test_le(self):
+        self.assertEqual(interpret('(le 0 0)'), True)
+        self.assertEqual(interpret('(le 2 1)'), False)
+        self.assertEqual(interpret('(le 9 10)'), True)
+        self.assertEqual(interpret('(le 0 1)'), True)
+
+    def test_ge(self):
+        self.assertEqual(interpret('(ge 0 0)'), True)
+        self.assertEqual(interpret('(ge 2 1)'), True)
+        self.assertEqual(interpret('(ge 9 10)'), False)
+        self.assertEqual(interpret('(ge 0 1)'), False)
+
 if __name__ == '__main__':
     unittest.main()
 
