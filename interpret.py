@@ -2,6 +2,7 @@
 Evaluate and execute an abstract syntax program
 '''
 
+from preprocess import PreprocesserException
 from scanner import ScannerException
 from parser import ParserException
 import parser as ps
@@ -16,7 +17,7 @@ def interpret(string: str) -> any:
     '''
     try:
         return eval_tree(ps.program(string))
-    except (ScannerException, ParserException, InterpretException) as e:
+    except (ScannerException, ParserException, InterpretException, PreprocesserException) as e:
         print(e)
 
 def eval_tree(node: ps.Node) -> any:

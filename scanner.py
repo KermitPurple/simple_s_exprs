@@ -2,6 +2,7 @@
 Handles scanning the character stream and converting it into a character stream
 '''
 
+from preprocess import preprocess
 from dataclasses import dataclass
 from typing import TypeVar, Iterator
 from enum import Enum
@@ -37,7 +38,7 @@ def scanner_gen(string: str) -> Iterator[Token]:
     use a generator to convert character stream to tokens stream
     :string: the character stream to convert
     '''
-    string += ' '
+    string = preprocess(string)
     state = ScanningState.GENERAL
     partial = ''
     for ch in string:

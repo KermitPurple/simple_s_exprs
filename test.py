@@ -4,8 +4,15 @@
 Test cases
 '''
 
+from preprocess import preprocess
 from interpret import interpret
 import unittest
+
+class TestPreprocess(unittest.TestCase):
+    def test_preprocess(self):
+        self.assertEqual(preprocess('(add 1 2) // Comment!'), '(add 1 2) ')
+        self.assertEqual(preprocess('(add 1 2)     '), '(add 1 2) ')
+        self.assertEqual(preprocess('#def p (print \'test\')\np (print \'Also this!\')'), '(print \'test\') (print \'Also this!\') ')
 
 class TestInterpret(unittest.TestCase):
     def test_assign(self):
