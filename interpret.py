@@ -12,6 +12,7 @@ class InterpretException(Exception): pass
 def interpret(string: str) -> any:
     '''
     interpret and execute a string
+    :string: str to execute
     '''
     try:
         return eval_tree(ps.program(string))
@@ -21,6 +22,7 @@ def interpret(string: str) -> any:
 def eval_tree(node: ps.Node) -> any:
     '''
     interpret and execute a program
+    :node: tree to execute
     '''
     match node:
         case ps.ExpressionsNode(left, right):
@@ -31,9 +33,8 @@ def eval_tree(node: ps.Node) -> any:
         case ps.ValueNode(value=value):
             return value
         case ps.FunctionNode(name, args):
-            func = symbol_table.get(name, None)
-            if func is None:
-                raise InterpretException(f'{name} is undefined')
+            check_symbol(name)
+            func = symbol_table[name]
             try:
                 return func(*map(eval_tree, args))
             except TypeError as t:
@@ -42,22 +43,33 @@ def eval_tree(node: ps.Node) -> any:
             symbol_table[name] = eval_tree(value)
             return symbol_table[name]
         case ps.AddAssignNode(name, value):
+            check_symbol(name)
             symbol_table[name] += eval_tree(value)
             return symbol_table[name]
         case ps.SubAssignNode(name, value):
+            check_symbol(name)
             symbol_table[name] -= eval_tree(value)
             return symbol_table[name]
         case ps.MulAssignNode(name, value):
+            check_symbol(name)
             symbol_table[name] *= eval_tree(value)
             return symbol_table[name]
         case ps.DivAssignNode(name, value):
+            check_symbol(name)
             symbol_table[name] /= eval_tree(value)
             return symbol_table[name]
         case ps.IncrementNode(name):
+            check_symbol(name)
             symbol_table[name] += 1
             return symbol_table[name]
         case ps.DecrementNode(name):
+            check_symbol(name)
             symbol_table[name] -= 1
             return symbol_table[name]
         case ps.IdentNode(name):
-            return symbol_table.get(name, None)
+            check_symbol(name)
+            return symbol_table[name]
+
+def check_symbol(name: str):
+    if name not in symbol_table:
+        raise InterpretException(f'{name} not in symbol table')
