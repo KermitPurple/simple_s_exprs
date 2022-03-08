@@ -37,6 +37,11 @@ class ProgramNode(Node):
     left: Node
     right: ProgramNode | None = None
 
+@dataclass
+class AssignNode(Node):
+    left: IdentNode
+    right: Node
+
 symbol_table = {
     'print': print,
     'neg': lambda a: -a,
@@ -56,6 +61,15 @@ def expression(scan: sc.Scanner) -> Node:
         ident = next(scan, None)
         if not isinstance(ident, sc.IdentToken):
             return ErrorNode('Did not find identifier for function')
+        elif ident.name in ('assign', '='):
+            ident = next(scan, None)
+            if not isinstance(ident, sc.IdentToken):
+                return ErrorNode('Expected name of variable to assign to')
+            ret = AssignNode(ident.name, expression(scan))
+            if not isinstance(scan.next, sc.RParenToken):
+                return ErrorNode(f'Expected \')\' after assignment')
+            next(scan)
+            return ret
         elif ident.name not in symbol_table:
             return ErrorNode(f'Did not find identifier, {ident.name} in symbol table')
         arguments = []

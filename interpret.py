@@ -26,7 +26,9 @@ def eval_tree(node: ps.Node) -> any:
             try:
                 return func(*map(eval_tree, args))
             except TypeError as t:
-                print(f'{name!r} got the incorrect number of arguments: \n\t{t}')
+                print(t)
+        case ps.AssignNode(name, value):
+            ps.symbol_table[name] = eval_tree(value)
         case ps.IdentNode(name):
             return ps.symbol_table.get(name, None)
         case ps.ErrorNode(msg):
