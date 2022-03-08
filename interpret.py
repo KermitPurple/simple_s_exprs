@@ -3,6 +3,7 @@ Evaluate and execute an abstract syntax tree
 '''
 
 import parser as ps
+from symbol_table import symbol_table
 
 def interpret(string: str) -> any:
     '''

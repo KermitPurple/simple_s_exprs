@@ -5,6 +5,7 @@ Handles converting token stream into abstract syntax tree
 from dataclasses import dataclass
 from typing import TypeVar
 from enum import Enum
+from symbol_table import symbol_table
 import scanner as sc
 
 T = TypeVar('T')
@@ -41,15 +42,6 @@ class ProgramNode(Node):
 class AssignNode(Node):
     left: IdentNode
     right: Node
-
-symbol_table = {
-    'print': print,
-    'neg': lambda a: -a,
-    'add': lambda a, b: a + b,
-    'sub': lambda a, b: a - b,
-    'mul': lambda a, b: a * b,
-    'div': lambda a, b: a / b,
-}
 
 def expression(scan: sc.Scanner) -> Node:
     '''
