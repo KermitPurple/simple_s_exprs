@@ -72,6 +72,11 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(div (div 3 2) 1)'), 1.5)
         self.assertEqual(interpret('(div 3 (div 2 1))'), 1.5)
 
+    def test_mod(self):
+        self.assertAlmostEqual(interpret('(mod 2.9 2)'), 0.9)
+        self.assertEqual(interpret('(mod (mod 3 2) 2)'), 1)
+        self.assertEqual(interpret('(mod 3 (mod 5 3))'), 1)
+
     def test_eq(self):
         self.assertTrue(interpret('(eq 0 0)'))
         self.assertTrue(interpret('(eq 1 1)'))
