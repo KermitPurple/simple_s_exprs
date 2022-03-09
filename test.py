@@ -9,12 +9,17 @@ from interpret import interpret
 import unittest
 
 class TestPreprocess(unittest.TestCase):
-    def test_preprocess(self):
+    def test_comments(self):
         self.assertEqual(preprocess('(add 1 2) // Comment!'), '(add 1 2) ')
         self.assertEqual(preprocess('(add 1 2)     '), '(add 1 2) ')
+
+    def test_macro(self):
         self.assertEqual(preprocess('#def p (print \'test\')\np (print \'Also this!\')'), '(print \'test\') (print \'Also this!\') ')
         self.assertEqual(preprocess('#def p (print \'test\')\n (print \'just p\')'), '(print \'just p\') ')
         self.assertEqual(preprocess('#def p (print \'test\')\n (print \'just \\\' p\')'), '(print \'just \\\' p\') ')
+
+    def test_include(self):
+        self.assertEqual(preprocess('#inc test.txt\n(f)'), '(def f () 1) \n\n(f) ')
 
 class TestInterpret(unittest.TestCase):
     def test_assign(self):
