@@ -32,4 +32,4 @@ mul         | Multiply two numbers                      | `(mul 2 2)`
 div         | Divide two numbers                        | `(div 9 3)`
 if          | Conditionally do something                | `(if (> x 0)(print x))` or `(if (> x 0) x 0)`
 nop         | Do nothing, use to chain                  | `(nop (print 'two!') (print 'expressions!'))`
-list        | Form all arguments into a list            | `(list 1 2 3 4 5)`
+lst         | Form all arguments into a list            | `(lst 1 2 3 4 5)`

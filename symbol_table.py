@@ -40,6 +40,9 @@ def nop(*args: T):
     if args:
         return args[-1]
 
+def lst(*args: T) -> list[T]:
+    return list(args)
+
 symbol_table = {
     'print': print,
     'neg': neg,
@@ -62,6 +65,6 @@ symbol_table = {
     'ge': ge,
     '>=': ge,
     'nop': nop,
-    'list': list,
+    'lst': lst,
 }
 
