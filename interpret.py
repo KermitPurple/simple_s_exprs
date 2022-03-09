@@ -7,7 +7,7 @@ from scanner import ScannerException
 from parser import ParserException
 from copy import deepcopy
 import parser as ps
-from symbol_table import new_symbol_table
+from symbol_table import new_symbol_table, copy_table
 class InterpretException(Exception): pass
 
 def interpret(string: str) -> any:
@@ -86,7 +86,7 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
                 for name, value in zip(names, args):
                     symbol_table[name] = value
                 result = eval_tree(body, symbol_table)
-                symbol_table = old_scope
+                copy_table(old_scope, symbol_table)
                 return result
             new_function.__name__ = name
             symbol_table[name] = new_function
