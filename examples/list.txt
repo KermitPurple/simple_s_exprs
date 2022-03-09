@@ -1,0 +1,4 @@
+(= l (lst))
+(+= l (lst 1 2 3))
+(= l (+ (lst (neg 3)(neg 2)(neg 1) 0) l))
+(print l)
