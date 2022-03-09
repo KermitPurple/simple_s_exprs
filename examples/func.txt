@@ -1,0 +1,15 @@
+(def factorial (n)
+    (if (<= n 1)
+        1 // if body
+        (* n (factorial (- n 1))) // else
+    )
+)
+(= ! factorial)
+(print (! 0))
+(print (! 1))
+(print (! 2))
+(print (! 3))
+(print (! 4))
+(print (! 5))
+(print (! 6))
+(print (! 7))
