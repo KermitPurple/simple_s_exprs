@@ -10,7 +10,7 @@ import parser as ps
 from symbol_table import new_symbol_table, copy_table
 class InterpretException(Exception): pass
 
-def interpret(string: str, symbol_table: dict[str, any] | None) -> any:
+def interpret(string: str, symbol_table: dict[str, any] | None = None) -> any:
     '''
     interpret and execute a string
     :string: str to execute
