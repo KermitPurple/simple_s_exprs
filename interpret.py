@@ -10,13 +10,15 @@ import parser as ps
 from symbol_table import new_symbol_table, copy_table
 class InterpretException(Exception): pass
 
-def interpret(string: str) -> any:
+def interpret(string: str, symbol_table: dict[str, any] | None) -> any:
     '''
     interpret and execute a string
     :string: str to execute
     '''
+    if symbol_table is None:
+        symbol_table = new_symbol_table()
     try:
-        return eval_tree(ps.program(string), new_symbol_table())
+        return eval_tree(ps.program(string), symbol_table)
     except (ScannerException, ParserException, InterpretException, PreprocesserException) as e:
         print(e)
 
@@ -83,8 +85,10 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             def new_function(*args):
                 nonlocal symbol_table
                 old_scope = deepcopy(symbol_table)
-                for name, value in zip(names, args):
-                    symbol_table[name] = value
+                if len(names) != len(args):
+                    raise InterpretException(f'{name} expected {len(names)} arguments but got {len(args)}')
+                for key, value in zip(names, args):
+                    symbol_table[key] = value
                 result = eval_tree(body, symbol_table)
                 copy_table(old_scope, symbol_table)
                 return result

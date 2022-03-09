@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+from symbol_table import new_symbol_table
 from interpret import interpret
 from typing import IO
 from sys import argv
 
 def interactive():
+    symbol_table = new_symbol_table()
     try:
         while 1:
-            val = interpret(input('interpreter> '))
+            val = interpret(input('interpreter> '), symbol_table)
             if val is not None:
                 print(f'{val!r}')
     except (KeyboardInterrupt, EOFError):
