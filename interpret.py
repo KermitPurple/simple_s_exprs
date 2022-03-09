@@ -34,7 +34,7 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
         case ps.ValueNode(value=value):
             return value
         case ps.FunctionNode(name, args):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             func = symbol_table[name]
             try:
                 return func(*map(lambda x: eval_tree(x, symbol_table), args))
@@ -44,35 +44,35 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             symbol_table[name] = eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.AddAssignNode(name, value):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] += eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.SubAssignNode(name, value):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] -= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.MulAssignNode(name, value):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] *= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.DivAssignNode(name, value):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] /= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.ModAssignNode(name, value):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] %= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.IncrementNode(name):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] += 1
             return symbol_table[name]
         case ps.DecrementNode(name):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             symbol_table[name] -= 1
             return symbol_table[name]
         case ps.IdentNode(name):
-            check_symbol(name)
+            check_symbol(name, symbol_table)
             return symbol_table[name]
         case ps.IfNode(cond, block, else_block):
             if eval_tree(cond, symbol_table):
@@ -81,7 +81,7 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
                 return eval_tree(else_block, symbol_table)
         case ps.DefNode(name, names, body) as n:
             def new_function(*args):
-                global symbol_table
+                nonlocal symbol_table
                 old_scope = deepcopy(symbol_table)
                 for name, value in zip(names, args):
                     symbol_table[name] = value
@@ -92,6 +92,6 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             symbol_table[name] = new_function
             return symbol_table[name]
 
-def check_symbol(name: str):
+def check_symbol(name: str, symbol_table: dict[str, any]):
     if name not in symbol_table:
         raise InterpretException(f'{name} not in symbol table')

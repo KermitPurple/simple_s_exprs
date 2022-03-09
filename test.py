@@ -104,6 +104,7 @@ class TestInterpret(unittest.TestCase):
 
     def test_func(self):
         self.assertEqual(interpret('(def square (x) (* x x)) (square 4)'), 16)
+        self.assertEqual(interpret('(def f () (= x 10)) (f) x'), None)
 
 if __name__ == '__main__':
     unittest.main()
