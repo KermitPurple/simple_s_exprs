@@ -43,6 +43,10 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(assign x 10) (div_assign x 10) x'), 1)
         self.assertAlmostEqual(interpret('(assign y 2) (div_assign y 5) y'), 2 / 5)
 
+    def test_mod_assign(self):
+        self.assertEqual(interpret('(assign x 10) (mod_assign x 10) x'), 0)
+        self.assertAlmostEqual(interpret('(assign y 2) (mod_assign y 5) y'), 2)
+
     def test_inc(self):
         self.assertEqual(interpret('(assign x 10) (inc x) x'), 11)
         self.assertEqual(interpret('(assign y 2) (inc y) y'), 3)
