@@ -1,0 +1,20 @@
+(def ! (n)
+    (if (< n 2)
+        1
+        (nop
+            (= result 2)
+            (= i 3)
+            (while (<= i n) (nop
+                (*= result i)
+                (++ i)
+            ))
+            result
+        )
+    )
+)
+
+(= i 0)
+(while (< i 15) (nop
+    (print i (! i))
+    (++ i)
+))
