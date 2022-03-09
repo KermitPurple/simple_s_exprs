@@ -5,6 +5,7 @@ Evaluate and execute an abstract syntax program
 from preprocess import PreprocesserException
 from scanner import ScannerException
 from parser import ParserException
+from copy import deepcopy
 import parser as ps
 from symbol_table import symbol_table
 
@@ -75,6 +76,18 @@ def eval_tree(node: ps.Node) -> any:
                 return eval_tree(block)
             elif else_block is not None:
                 return eval_tree(else_block)
+        case ps.DefNode(name, names, body) as n:
+            old_scope = deepcopy(symbol_table)
+            def new_function(*args):
+                global symbol_table
+                for name, value in zip(names, args):
+                    symbol_table[name] = value
+                result = eval_tree(body)
+                symbol_table = old_scope
+                return result
+            new_function.__name__ = name
+            symbol_table[name] = new_function
+            return symbol_table[name]
 
 def check_symbol(name: str):
     if name not in symbol_table:

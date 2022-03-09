@@ -53,6 +53,12 @@ class IfNode(Node):
     block: Node
     else_block: Node
 
+@dataclass
+class DefNode(Node):
+    name: str
+    args: list[int]
+    body: Node
+
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
     Get a specified token from the token stream
@@ -97,6 +103,30 @@ def partial_if(scan: sc.Scanner) -> Node:
     token(scan, sc.RParenToken)
     return ret
 
+def arguments(scan: sc.Scanner) -> list[str]:
+    '''
+    Get a list of arguments
+    :scan: iterator over the token stream with 1 look ahead
+    :returns: a list if argument names
+    '''
+    token(scan, sc.LParenToken)
+    result = []
+    while not isinstance(scan.next, sc.RParenToken):
+        result.append(token(scan, sc.IdentToken).name)
+    token(scan, sc.RParenToken)
+    return result
+
+def partial_def(scan: sc.Scanner) -> Node:
+    '''
+    Get the rest of a function declaration "function_name (arg1 arg2) (+ (* arg1 arg1) (* arg2 arg2)))"
+    :scan: iterator over the token stream with 1 look ahead
+    '''
+    name = token(scan, sc.IdentToken).name
+    args = arguments(scan)
+    body = expression(scan)
+    token(scan, sc.RParenToken)
+    return DefNode(name, args, body)
+
 def function(scan: sc.Scanner) -> Node:
     '''
     Get a function from the token stream
@@ -120,6 +150,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_increment(scan, DecrementNode)
     elif ident.name == 'if':
         return partial_if(scan)
+    elif ident.name == 'def':
+        return partial_def(scan)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)
