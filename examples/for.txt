@@ -1,3 +1,16 @@
-(for i (10)
-    (print i)
+(def ! (n)
+    (if (< n 2)
+        1
+        (nop
+            (= result 2)
+            (for i (3 (+ n 1))
+                (*= result i)
+            )
+            result
+        )
+    )
+)
+
+(for i (15)
+    (print i (! i))
 )
