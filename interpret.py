@@ -100,6 +100,12 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             while eval_tree(cond, symbol_table):
                 last = eval_tree(block, symbol_table)
             return last
+        case ps.ForNode(name, range_args, block):
+            last = None
+            for i in range(*map(lambda x: eval_tree(x, symbol_table), range_args)):
+                symbol_table[name] = i
+                last = eval_tree(block, symbol_table)
+            return last
 
 def check_symbol(name: str, symbol_table: dict[str, any]):
     if name not in symbol_table:

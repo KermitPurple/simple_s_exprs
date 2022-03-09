@@ -65,6 +65,12 @@ class WhileNode(Node):
     condition: Node
     block: Node
 
+@dataclass
+class ForNode(Node):
+    name: str
+    range_args: list[Node]
+    block: Node
+
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
     Get a specified token from the token stream
@@ -142,6 +148,25 @@ def partial_while(scan: sc.Scanner) -> Node:
     token(scan, sc.RParenToken)
     return result
 
+def partial_for(scan: sc.Scanner) -> Node:
+    '''
+    Get the rest of a for loop "x (1 6) (print x))"
+    :scan: iterator over the token stream with 1 look ahead
+    '''
+    name = token(scan, sc.IdentToken).name
+    range_args = []
+    token(scan, sc.LParenToken)
+    while not isinstance(scan.next, sc.RParenToken):
+        range_args.append(expression(scan))
+    count = len(range_args)
+    if count < 1:
+        raise ParserException('Expected at least one range argument for the for loop')
+    elif count > 3:
+        raise ParserException(f'Expected no more than three range arguments but {count} were given')
+    token(scan, sc.RParenToken)
+    result = ForNode(name, range_args, expression(scan))
+    token(scan, sc.RParenToken)
+    return result
 
 def function(scan: sc.Scanner) -> Node:
     '''
@@ -172,6 +197,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_def(scan)
     elif ident.name == 'while':
         return partial_while(scan)
+    elif ident.name == 'for':
+        return partial_for(scan)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)

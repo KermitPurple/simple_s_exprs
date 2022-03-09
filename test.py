@@ -123,6 +123,10 @@ class TestInterpret(unittest.TestCase):
     def test_while(self):
         self.assertEqual(interpret('(= x 0)(while (< x 10) (++ x)) x'), 10)
 
+    def test_for(self):
+        self.assertEqual(interpret('(for i (10) i)'), 9)
+        self.assertEqual(interpret('(for i (6 10 2) i)'), 8)
+
 if __name__ == '__main__':
     unittest.main()
 
