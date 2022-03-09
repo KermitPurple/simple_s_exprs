@@ -60,6 +60,11 @@ class DefNode(Node):
     args: list[int]
     body: Node
 
+@dataclass
+class WhileNode(Node):
+    condition: Node
+    block: Node
+
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
     Get a specified token from the token stream
@@ -128,6 +133,16 @@ def partial_def(scan: sc.Scanner) -> Node:
     token(scan, sc.RParenToken)
     return DefNode(name, args, body)
 
+def partial_while(scan: sc.Scanner) -> Node:
+    '''
+    Get the rest of a while loop "(< x 10) (print x))"
+    :scan: iterator over the token stream with 1 look ahead
+    '''
+    result = WhileNode(expression(scan), expression(scan))
+    token(scan, sc.RParenToken)
+    return result
+
+
 def function(scan: sc.Scanner) -> Node:
     '''
     Get a function from the token stream
@@ -155,6 +170,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_if(scan)
     elif ident.name == 'def':
         return partial_def(scan)
+    elif ident.name == 'while':
+        return partial_while(scan)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)

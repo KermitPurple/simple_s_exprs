@@ -79,7 +79,7 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
                 return eval_tree(block, symbol_table)
             elif else_block is not None:
                 return eval_tree(else_block, symbol_table)
-        case ps.DefNode(name, names, body) as n:
+        case ps.DefNode(name, names, body):
             def new_function(*args):
                 nonlocal symbol_table
                 old_scope = deepcopy(symbol_table)
@@ -91,6 +91,11 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             new_function.__name__ = name
             symbol_table[name] = new_function
             return symbol_table[name]
+        case ps.WhileNode(cond, block):
+            last = None
+            while eval_tree(cond, symbol_table):
+                last = eval_tree(block, symbol_table)
+            return last
 
 def check_symbol(name: str, symbol_table: dict[str, any]):
     if name not in symbol_table:

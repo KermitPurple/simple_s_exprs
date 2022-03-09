@@ -116,9 +116,12 @@ class TestInterpret(unittest.TestCase):
         self.assertFalse(interpret('(ge 9 10)'))
         self.assertFalse(interpret('(ge 0 1)'))
 
-    def test_func(self):
+    def test_def(self):
         self.assertEqual(interpret('(def square (x) (* x x)) (square 4)'), 16)
         self.assertEqual(interpret('(def f () (= x 10)) (f) x'), None)
+
+    def test_while(self):
+        self.assertEqual(interpret('(= x 0)(while (< x 10) (++ x)) x'), 10)
 
 if __name__ == '__main__':
     unittest.main()
