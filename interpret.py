@@ -7,8 +7,7 @@ from scanner import ScannerException
 from parser import ParserException
 from copy import deepcopy
 import parser as ps
-from symbol_table import symbol_table
-
+from symbol_table import new_symbol_table
 class InterpretException(Exception): pass
 
 def interpret(string: str) -> any:
@@ -17,20 +16,20 @@ def interpret(string: str) -> any:
     :string: str to execute
     '''
     try:
-        return eval_tree(ps.program(string))
+        return eval_tree(ps.program(string), new_symbol_table())
     except (ScannerException, ParserException, InterpretException, PreprocesserException) as e:
         print(e)
 
-def eval_tree(node: ps.Node) -> any:
+def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
     '''
     interpret and execute a program
     :node: tree to execute
     '''
     match node:
         case ps.ExpressionsNode(left, right):
-            ret = eval_tree(left)
+            ret = eval_tree(left, symbol_table)
             if right is not None:
-                ret = eval_tree(right)
+                ret = eval_tree(right, symbol_table)
             return ret
         case ps.ValueNode(value=value):
             return value
@@ -38,27 +37,31 @@ def eval_tree(node: ps.Node) -> any:
             check_symbol(name)
             func = symbol_table[name]
             try:
-                return func(*map(eval_tree, args))
+                return func(*map(lambda x: eval_tree(x, symbol_table), args))
             except TypeError as t:
                 raise InterpretException(str(t))
         case ps.AssignNode(name, value):
-            symbol_table[name] = eval_tree(value)
+            symbol_table[name] = eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.AddAssignNode(name, value):
             check_symbol(name)
-            symbol_table[name] += eval_tree(value)
+            symbol_table[name] += eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.SubAssignNode(name, value):
             check_symbol(name)
-            symbol_table[name] -= eval_tree(value)
+            symbol_table[name] -= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.MulAssignNode(name, value):
             check_symbol(name)
-            symbol_table[name] *= eval_tree(value)
+            symbol_table[name] *= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.DivAssignNode(name, value):
             check_symbol(name)
-            symbol_table[name] /= eval_tree(value)
+            symbol_table[name] /= eval_tree(value, symbol_table)
+            return symbol_table[name]
+        case ps.ModAssignNode(name, value):
+            check_symbol(name)
+            symbol_table[name] %= eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.IncrementNode(name):
             check_symbol(name)
@@ -72,17 +75,17 @@ def eval_tree(node: ps.Node) -> any:
             check_symbol(name)
             return symbol_table[name]
         case ps.IfNode(cond, block, else_block):
-            if eval_tree(cond):
-                return eval_tree(block)
+            if eval_tree(cond, symbol_table):
+                return eval_tree(block, symbol_table)
             elif else_block is not None:
-                return eval_tree(else_block)
+                return eval_tree(else_block, symbol_table)
         case ps.DefNode(name, names, body) as n:
             def new_function(*args):
                 global symbol_table
                 old_scope = deepcopy(symbol_table)
                 for name, value in zip(names, args):
                     symbol_table[name] = value
-                result = eval_tree(body)
+                result = eval_tree(body, symbol_table)
                 symbol_table = old_scope
                 return result
             new_function.__name__ = name

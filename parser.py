@@ -44,6 +44,7 @@ class AddAssignNode(_AssignNode): pass
 class SubAssignNode(_AssignNode): pass
 class MulAssignNode(_AssignNode): pass
 class DivAssignNode(_AssignNode): pass
+class ModAssignNode(_AssignNode): pass
 class IncrementNode(_IdentNode): pass
 class DecrementNode(_IdentNode): pass
 
@@ -144,6 +145,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_assign(scan, MulAssignNode)
     elif ident.name in ('div_assign', '/='):
         return partial_assign(scan, DivAssignNode)
+    elif ident.name in ('mod_assign', '%='):
+        return partial_assign(scan, ModAssignNode)
     elif ident.name in ('inc', '++'):
         return partial_increment(scan, IncrementNode)
     elif ident.name in ('dec', '--'):
