@@ -77,9 +77,9 @@ def eval_tree(node: ps.Node) -> any:
             elif else_block is not None:
                 return eval_tree(else_block)
         case ps.DefNode(name, names, body) as n:
-            old_scope = deepcopy(symbol_table)
             def new_function(*args):
                 global symbol_table
+                old_scope = deepcopy(symbol_table)
                 for name, value in zip(names, args):
                     symbol_table[name] = value
                 result = eval_tree(body)
