@@ -20,6 +20,7 @@ class TestPreprocess(unittest.TestCase):
 
     def test_include(self):
         self.assertEqual(preprocess('#inc test.txt\n(f)'), '(def f () 1) \n\n(f) ')
+        self.assertEqual(preprocess('#inc test.txt\n(+ (f) 10)'), '(def f () 1) \n\n(+ (f) 10) ')
 
 class TestInterpret(unittest.TestCase):
     def test_assign(self):
