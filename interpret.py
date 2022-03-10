@@ -7,7 +7,7 @@ from scanner import ScannerException
 from parser import ParserException
 from copy import deepcopy
 import parser as ps
-from symbol_table import new_symbol_table, copy_table
+from symbol_table import new_symbol_table, copy_table, KEYWORDS
 class InterpretException(Exception): pass
 
 def interpret(string: str, symbol_table: dict[str, any] | None = None) -> any:
@@ -43,6 +43,7 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
             except TypeError as t:
                 raise InterpretException(str(t))
         case ps.AssignNode(name, value):
+            check_in_keywords(name)
             symbol_table[name] = eval_tree(value, symbol_table)
             return symbol_table[name]
         case ps.AddAssignNode(name, value):
@@ -113,6 +114,11 @@ def eval_tree(node: ps.Node, symbol_table: dict[str, any]) -> any:
                 last = eval_tree(block, symbol_table)
             return last
 
+def check_in_keywords(name: str):
+    if name in KEYWORDS:
+        raise InterpretException(f'{name} is a keyword and cannot be assigned to')
+
 def check_symbol(name: str, symbol_table: dict[str, any]):
+    check_in_keywords(name)
     if name not in symbol_table:
         raise InterpretException(f'{name} not in symbol table')

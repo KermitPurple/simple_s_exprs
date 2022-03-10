@@ -2,6 +2,22 @@ from typing import TypeVar
 
 T = TypeVar('T')
 
+KEYWORDS = [
+    'assign', '=',
+    'add_assign', '+=',
+    'sub_assign', '-=',
+    'mul_assign', '*=',
+    'div_assign', '/=',
+    'mod_assign', '%=',
+    'inc', '++',
+    'dec', '--',
+    'if',
+    'def',
+    'while',
+    'for',
+    'fore',
+]
+
 def copy_table(src: dict[str, any], dst: dict[str, any]):
     '''
     copy contents of one symbol table into another
