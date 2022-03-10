@@ -135,6 +135,21 @@ class TestInterpret(unittest.TestCase):
     def test_append(self):
         self.assertEqual(interpret('(= x (lst 1 2 3)) (+= x (lst 4 5)) (app x 6) x'), [1, 2, 3, 4, 5, 6])
 
+    def test_int(self):
+        self.assertEqual(interpret('(int \'123\')'), 123)
+        self.assertEqual(interpret('(int \'32\')'), 32)
+
+    def test_float(self):
+        self.assertEqual(interpret('(float \'123\')'), 123.0)
+        self.assertEqual(interpret('(float \'32.1\')'), 32.1)
+
+    def test_str(self):
+        self.assertEqual(interpret('(str 123)'), '123')
+        self.assertEqual(interpret('(str 32.1)'), '32.1')
+
+    def test_len(self):
+        self.assertEqual(interpret('(len (lst 1 2 3))'), 3)
+
 if __name__ == '__main__':
     unittest.main()
 

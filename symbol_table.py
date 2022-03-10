@@ -110,5 +110,10 @@ def new_symbol_table() -> dict[str, any]:
         'lst': lst,
         'append': append,
         'app': append,
+        'input': input,
+        'int': int,
+        'float': float,
+        'str': str,
+        'len': len,
     }
 
