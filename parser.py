@@ -71,6 +71,12 @@ class ForNode(Node):
     range_args: list[Node]
     block: Node
 
+@dataclass
+class ForEachNode(Node):
+    name: str
+    items: Node
+    block: Node
+
 def token(scan: sc.Scanner, tok) -> sc.Token:
     '''
     Get a specified token from the token stream
@@ -168,6 +174,19 @@ def partial_for(scan: sc.Scanner) -> Node:
     token(scan, sc.RParenToken)
     return result
 
+def partial_for_each(scan: sc.Scanner) -> Node:
+    '''
+    Get the rest of a for each loop "x (lst 1 2 3 4 5) (print x))"
+    :scan: iterator over the token stream with 1 look ahead
+    '''
+    result = ForEachNode(
+        token(scan, sc.IdentToken).name,
+        expression(scan),
+        expression(scan)
+    )
+    token(scan, sc.RParenToken)
+    return result
+
 def function(scan: sc.Scanner) -> Node:
     '''
     Get a function from the token stream
@@ -199,6 +218,8 @@ def function(scan: sc.Scanner) -> Node:
         return partial_while(scan)
     elif ident.name == 'for':
         return partial_for(scan)
+    elif ident.name == 'fore':
+        return partial_for_each(scan)
     arguments = []
     while not isinstance(scan.next, sc.RParenToken):
         expr = expression(scan)

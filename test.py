@@ -128,6 +128,10 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(for i (10) i)'), 9)
         self.assertEqual(interpret('(for i (6 10 2) i)'), 8)
 
+    def test_fore_each(self):
+        self.assertEqual(interpret('(fore i (lst 1 3 2) i)'), 2)
+        self.assertEqual(interpret('(fore i (lst 9 3 1) i)'), 1)
+
 if __name__ == '__main__':
     unittest.main()
 
