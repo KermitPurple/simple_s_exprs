@@ -58,7 +58,14 @@ def new_symbol_table() -> dict[str, any]:
         if args:
             return args[-1]
 
-    def lst(*args: T) -> list[T]: return list(args)
+    def lst(*args: T) -> list[T]:
+        return list(args)
+
+    def append(list_: list[T], item: T) -> list[T]:
+        if not isinstance(list_, list):
+            raise TypeError('the first argument in the append function must be a list')
+        list_.append(item)
+        return list_
 
     return {
         'print': print,
@@ -85,5 +92,7 @@ def new_symbol_table() -> dict[str, any]:
         '>=': ge,
         'nop': nop,
         'lst': lst,
+        'append': append,
+        'app': append,
     }
 

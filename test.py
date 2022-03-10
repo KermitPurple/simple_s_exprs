@@ -132,6 +132,9 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret('(fore i (lst 1 3 2) i)'), 2)
         self.assertEqual(interpret('(fore i (lst 9 3 1) i)'), 1)
 
+    def test_append(self):
+        self.assertEqual(interpret('(= x (lst 1 2 3)) (+= x (lst 4 5)) (app x 6) x'), [1, 2, 3, 4, 5, 6])
+
 if __name__ == '__main__':
     unittest.main()
 
